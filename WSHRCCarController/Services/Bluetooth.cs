@@ -14,11 +14,24 @@ namespace WSHRCCarController.Services
 
         BluetoothService()
         {
+            // Set up the BLE manager
+            bleManager = Shiny.Hosting.Host.GetService<IBleManager>();
+
             var access = bleManager.RequestAccess();
-            if (access != AccessState.Available)
+            if (access.Equals(AccessState.Available))
             {
                 // Do something
             }
+        }
+
+        void ScanForDevices()
+        {
+            // Scan for devices
+            var scan = bleManager.ScanForUniquePeripherals();
+            scan.Subscribe(peripheral =>
+            {
+                // Do something
+            });
         }
     }
 }
