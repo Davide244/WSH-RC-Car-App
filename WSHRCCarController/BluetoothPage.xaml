@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WSHRCCarController.BluetoothPage"
+             Title="Bluetooth"
+             Shell.BackgroundColor="#303030"
+             Shell.TitleColor="White"
+             Shell.ForegroundColor="White">
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            Priority="0"
+            Order="Primary"
+            IsEnabled="True">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="&#xF1E2;" FontFamily="FluentIcons" Size="30" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+    
+    <Grid>
+        <Grid Margin="20, 20, 20, 0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Border
+                    Background="#303030"
+                    StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8, 8, 8, 8"/>
+                    </Border.StrokeShape>
+                </Border>
+                <VerticalStackLayout>
+                    <Label Text="Verbundene Geräte" TextColor="White" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="Start" Margin="20, 10, 0, 0" />
+                    <ScrollView VerticalOptions="Start" IsClippedToBounds="True">
+                        <ListView x:Name="ConnectedBluetoothDeviceList" Margin="20, 0, 20, 0" SeparatorColor="Transparent" InputTransparent="True" RowHeight="60" HeightRequest="150">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid>
+                                            <Border
+                                                Background="#353535"
+                                                StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="0, 8, 0, 0"/>
+                                                </Border.StrokeShape>
+                                            </Border>
+                                            <HorizontalStackLayout>
+                                                <Image HeightRequest="30" WidthRequest="30">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="&#xF670;" FontFamily="FluentIcons" Size="30" Color="White" />
+                                                    </Image.Source>
+                                                </Image>
+                                                <StackLayout Padding="10" Spacing="-6" BackgroundColor="Transparent">
+                                                    <Label Text="{Binding DeviceName}" TextColor="White" FontSize="Medium" FontAttributes="Bold" />
+                                                    <Label Text="{Binding DeviceAddress}" TextColor="White" FontSize="Small" Opacity="0.5" />
+                                                </StackLayout>
+                                            </HorizontalStackLayout>
+                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5">
+                                                <Button.ImageSource>
+                                                    <FontImageSource Glyph="&#x000F027B;" FontFamily="FluentIcons" Size="30" Color="DarkRed" />
+                                                </Button.ImageSource>
+                                            </Button>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" />
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0, 15, 0, 0">
+                <Border
+                    Background="#303030"
+                    StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8, 8, 0, 0"/>
+                    </Border.StrokeShape>
+                </Border>
+
+                <VerticalStackLayout>
+                    <Label Text="Verfügbare Geräte" TextColor="White" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="Start" Margin="20, 10, 0, 0" />
+                    <ScrollView VerticalOptions="Start" IsClippedToBounds="True">
+                        <ListView x:Name="AvailableBluetoothDeviceList" Margin="20, 0, 20, 0" SeparatorColor="Transparent" InputTransparent="True" RowHeight="60" HeightRequest="390" ChildRemoved="AvailableBluetoothDeviceList_ChildrenChanged" ChildAdded="AvailableBluetoothDeviceList_ChildrenChanged">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid>
+                                            <Border
+                                                Background="#353535"
+                                                StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="8, 8, 8, 8"/>
+                                                </Border.StrokeShape>
+                                            </Border>
+                                            <HorizontalStackLayout>
+                                                <Image HeightRequest="30" WidthRequest="30">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="&#xF670;" FontFamily="FluentIcons" Size="30" Color="White" />
+                                                    </Image.Source>
+                                                </Image>
+                                                <StackLayout Padding="10" Spacing="-6" BackgroundColor="Transparent">
+                                                    <Label Text="{Binding DeviceName}" TextColor="White" FontSize="Medium" FontAttributes="Bold" />
+                                                    <Label Text="{Binding DeviceAddress}" TextColor="White" FontSize="Small" Opacity="0.5" />
+                                                </StackLayout>
+                                            </HorizontalStackLayout>
+                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5">
+                                                <Button.ImageSource>
+                                                    <FontImageSource Glyph="&#xE99A;" FontFamily="FluentIcons" Size="30" Color="DarkSeaGreen" />
+                                                </Button.ImageSource>
+                                            </Button>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label x:Name="BluetoothNoAvailableDevicesIndicator" HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" />
+            </Grid>
+        </Grid>
+        <Image Source="shadow.png" BackgroundColor="Transparent" VerticalOptions="Start" HeightRequest="20" Opacity="0.5" Aspect="Fill" />
+    </Grid>
+</ContentPage>
