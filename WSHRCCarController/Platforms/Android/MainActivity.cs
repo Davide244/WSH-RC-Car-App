@@ -20,6 +20,12 @@ namespace WSHRCCarController
             base.OnCreate(savedInstanceState);
 
             RequestedOrientation = ScreenOrientation.Landscape;
+
+            if (AskBluetoothPermission().Equals(PermissionStatus.Granted) == false)
+            {
+                // Close the app if the user denies the Bluetooth permission
+                //Finish();
+            }
         }
 
         protected override void OnResume()
@@ -44,6 +50,25 @@ namespace WSHRCCarController
                 DeviceOrientation.Portrait => ScreenOrientation.Portrait,
                 _ => ScreenOrientation.Unspecified
             };
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private async Task<PermissionStatus> AskBluetoothPermission() 
+        {
+            if ((await Permissions.CheckStatusAsync<Permissions.Bluetooth>()).Equals(PermissionStatus.Granted))
+            {
+                return PermissionStatus.Granted;
+            }
+            else
+            {
+                return await Permissions.RequestAsync<Permissions.Bluetooth>();
+            }
         }
     }
 }

@@ -31,6 +31,12 @@ namespace WSHRCCarController
         currentActivity.SetOrientation(WSHRCCarController.DeviceOrientation.Landscape);
 #endif
         }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
+            bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = 100 });
+        }
     }
 
 }

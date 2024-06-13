@@ -11,7 +11,8 @@
         <ToolbarItem
             Priority="0"
             Order="Primary"
-            IsEnabled="True">
+            IsEnabled="True"
+            Clicked="ToolbarItem_Clicked">
             <ToolbarItem.IconImageSource>
                 <FontImageSource Glyph="&#xF1E2;" FontFamily="FluentIcons" Size="30" Color="White" />
             </ToolbarItem.IconImageSource>
@@ -60,7 +61,7 @@
                                                     <Label Text="{Binding DeviceAddress}" TextColor="White" FontSize="Small" Opacity="0.5" />
                                                 </StackLayout>
                                             </HorizontalStackLayout>
-                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5">
+                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5" Clicked="DisconnectFromDeviceBtn_Clicked">
                                                 <Button.ImageSource>
                                                     <FontImageSource Glyph="&#x000F027B;" FontFamily="FluentIcons" Size="30" Color="DarkRed" />
                                                 </Button.ImageSource>
@@ -73,7 +74,7 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" />
+                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" IsVisible="False" />
             </Grid>
 
             <Grid Grid.Row="1" Margin="0, 15, 0, 0">
@@ -111,7 +112,7 @@
                                                     <Label Text="{Binding DeviceAddress}" TextColor="White" FontSize="Small" Opacity="0.5" />
                                                 </StackLayout>
                                             </HorizontalStackLayout>
-                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5">
+                                            <Button WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent" HorizontalOptions="End" Margin="5" Clicked="ConnectToDeviceBtn_Clicked">
                                                 <Button.ImageSource>
                                                     <FontImageSource Glyph="&#xE99A;" FontFamily="FluentIcons" Size="30" Color="DarkSeaGreen" />
                                                 </Button.ImageSource>
@@ -124,7 +125,7 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label x:Name="BluetoothNoAvailableDevicesIndicator" HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" />
+                <Label x:Name="BluetoothNoAvailableDevicesIndicator" HorizontalOptions="Center" VerticalOptions="Center" Text="Keine Geräte" FontSize="Large" TextColor="Gray" IsVisible="False" />
             </Grid>
         </Grid>
         <Image Source="shadow.png" BackgroundColor="Transparent" VerticalOptions="Start" HeightRequest="20" Opacity="0.5" Aspect="Fill" />

@@ -7,6 +7,8 @@
 
     <Grid>
 
+        <Button Text="TEST" Clicked="Button_Clicked"/>
+
         <Button FontFamily="SegoeIcons" HorizontalOptions="End" VerticalOptions="EndAndExpand" Margin="20" WidthRequest="50" HeightRequest="50" Clicked="BluetoothButton_Clicked">
             <Button.ImageSource>
                 <FontImageSource Glyph="&#xf670;" FontFamily="FluentIcons" Size="30" Color="Black" />

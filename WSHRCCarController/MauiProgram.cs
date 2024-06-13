@@ -28,6 +28,8 @@ namespace WSHRCCarController
             builder.UseSegoeFluentMauiIcons();
             builder.Services.AddBluetoothLE();
 
+            DependencyService.Register<Services.IBluetoothService, WSHRCCarController.Platforms.Android.Bluetooth.BluetoothConnector>();
+
             return builder.Build();
         }
     }

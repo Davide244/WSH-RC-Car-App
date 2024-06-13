@@ -8,30 +8,35 @@ using System.Threading.Tasks;
 
 namespace WSHRCCarController.Services
 {
-    public class BluetoothService
+    public struct RCBluetoothDevice
     {
-        IBleManager bleManager;
+        public string Name;
+        public string Address;
+        public string Status;
+        public string Manufacturer;
+    }
 
-        BluetoothService()
-        {
-            // Set up the BLE manager
-            bleManager = Shiny.Hosting.Host.GetService<IBleManager>();
+    public enum RCDataType
+    {
+        Speed,
+        Steer
+    }
 
-            var access = bleManager.RequestAccess();
-            if (access.Equals(AccessState.Available))
-            {
-                // Do something
-            }
-        }
+    public struct RCData
+    {
+        public RCDataType Type;
+        public int value;
+    }
 
-        void ScanForDevices()
-        {
-            // Scan for devices
-            var scan = bleManager.ScanForUniquePeripherals();
-            scan.Subscribe(peripheral =>
-            {
-                // Do something
-            });
-        }
+    public interface IBluetoothService
+    {
+        List<RCBluetoothDevice> GetAvailableDevices();
+
+        void ConnectToDevice(RCBluetoothDevice device);
+        void DisconnectDevice(RCBluetoothDevice device);
+
+        bool isDeviceConnected(RCBluetoothDevice device);
+
+        void SendData(RCData data);
     }
 }
