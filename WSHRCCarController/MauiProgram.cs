@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui;
+using Maui.FreakyEffects;
 using MauiIcons.SegoeFluent;
 using Microsoft.Extensions.Logging;
-using Shiny;
 
 namespace WSHRCCarController
 {
@@ -12,13 +12,16 @@ namespace WSHRCCarController
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseShiny()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("FluentSystemIcons-Regular.ttf", "FluentIcons");
                 })
+                //.ConfigureEffects(effects =>
+                //{
+                //    effects.InitFreakyEffects();
+                //})
                 .UseMauiCommunityToolkit();
 
 #if DEBUG
@@ -26,7 +29,6 @@ namespace WSHRCCarController
 #endif
 
             builder.UseSegoeFluentMauiIcons();
-            builder.Services.AddBluetoothLE();
 
             DependencyService.Register<Services.IBluetoothService, WSHRCCarController.Platforms.Android.Bluetooth.BluetoothConnector>();
 

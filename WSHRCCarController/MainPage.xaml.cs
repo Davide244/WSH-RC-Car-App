@@ -1,20 +1,20 @@
 ﻿using MauiIcons.Core;
+using System.Diagnostics;
 
 namespace WSHRCCarController
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+
+        private int MotorSpeed = 0;         // NOTE: This is from 0 to 255. 0 is no speed, 255 is full speed.
+        private int MotorSteerAngle = 0; // NOTE: This is not in degrees, but in a range of -100 to 100. -100 is full left, 100 is full right.
+
+        private const float MotorSteerSensitivity = 1.2f;
 
         public MainPage()
         {
             InitializeComponent();
             _ = new MauiIcon();
-        }
-
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count--;
         }
 
         private void BluetoothButton_Clicked(object sender, EventArgs e)
@@ -36,6 +36,30 @@ namespace WSHRCCarController
         {
             Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
             bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = 100 });
+        }
+
+        private void JoyXPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        {
+            // multiply by MotorSpeedMultiplier to adjust the slider sensitivity
+            float actualMotorAngle = (float)(e.TotalX * MotorSteerSensitivity);
+            int rawTranslationX = (int)e.TotalX;
+
+            // This moves JoystickX_Stick to the cursor position
+            if (actualMotorAngle > 255 || actualMotorAngle < -255)
+            {
+                actualMotorAngle = Math.Clamp(actualMotorAngle, -255, 255);
+                rawTranslationX = (int)(actualMotorAngle / MotorSteerSensitivity);
+            }
+
+            JoystickX_Stick.TranslationX = rawTranslationX;
+            // Set Motor steer angle (Round value correctly)
+            MotorSteerAngle = (int)Math.Round(actualMotorAngle);
+
+            Debug.Print($"MotorSteerAngle: {MotorSteerAngle}; RAW: {e.TotalX}");
+
+            // Send the data to the car
+            Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
+            bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Steer, value = MotorSteerAngle });
         }
     }
 

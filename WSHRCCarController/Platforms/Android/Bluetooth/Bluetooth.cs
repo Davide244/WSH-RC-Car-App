@@ -81,27 +81,22 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
 
         public void SendData(RCData data)
         {
-            // Convert Type to byte
-            byte type = data.Type switch
-            {
-                RCDataType.Speed => 0x01,
-                RCDataType.Steer => 0x02,
-                _ => 0x00
-            };
+            // Convert to byte array. Structure: [Identifier, Value, Motor Direction (0 = normal; 1 = reverse)]
+            byte[] dataBytes = new byte[3];
+            byte IdentifierByte = (byte)data.Type;
+            byte valueByte = (byte)Math.Abs(data.value);
+            byte isReverseByte = (byte)(data.value < 0 ? 1 : 0);
+            
 
-            // Convert int to byte array
-            byte[] value = BitConverter.GetBytes((short)data.value);
-
-            // Combine type and value
-            byte[] dataToSend = new byte[3];
-            dataToSend[0] = type;
-            dataToSend[1] = value[0];
-            dataToSend[2] = value[1];
+            // Copy identifier bytes to dataBytes
+            dataBytes[0] = IdentifierByte;
+            dataBytes[1] = valueByte;
+            dataBytes[2] = isReverseByte;
 
             // Send data to all connected devices
             foreach (BluetoothSocket socket in bluetoothSockets)
             {
-                socket.OutputStream.Write(dataToSend, 0, dataToSend.Length);
+                socket.OutputStream.Write(dataBytes, 0, dataBytes.Length); 
             }
         }
     }

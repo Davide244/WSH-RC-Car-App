@@ -7,7 +7,31 @@
 
     <Grid>
 
-        <Button Text="TEST" Clicked="Button_Clicked"/>
+        <Grid x:Name="JoystickContainer" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="JoystickX" BackgroundColor="LightGray" WidthRequest="100" HeightRequest="100" HorizontalOptions="Center" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="JoyXPanGestureRecognizer_PanUpdated"/>
+                </Grid.GestureRecognizers>
+
+                <Grid x:Name="JoystickX_Stick" HeightRequest="50" WidthRequest="50">
+                    <Border
+                        BackgroundColor="White">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="25, 25, 25, 25"/>
+                        </Border.StrokeShape>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="JoystickY" BackgroundColor="LightGray" WidthRequest="100" HeightRequest="100" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="1">
+                <!-- Add your Y-axis joystick implementation here -->
+            </Grid>
+        </Grid>
 
         <Button FontFamily="SegoeIcons" HorizontalOptions="End" VerticalOptions="EndAndExpand" Margin="20" WidthRequest="50" HeightRequest="50" Clicked="BluetoothButton_Clicked">
             <Button.ImageSource>
