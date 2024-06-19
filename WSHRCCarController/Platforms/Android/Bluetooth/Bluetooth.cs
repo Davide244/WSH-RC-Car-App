@@ -9,6 +9,7 @@ using Android.Bluetooth;
 using WSHRCCarController.Services;
 using WSHRCCarController.Platforms.Android.Bluetooth;
 using Android.OS;
+using Java.Lang;
 
 //[assembly: Dependency(typeof(BluetoothConnector))]
 namespace WSHRCCarController.Platforms.Android.Bluetooth
@@ -79,19 +80,30 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
             return bluetoothSockets.Contains(bluetoothSockets.Find(socket => socket.RemoteDevice.Address == device.Address));
         }
 
+        const byte SignatureByte = 0xAA;
+        const byte Signature2Byte = 0x01;
+        const byte SignatureEndByte = 0x1C;
+
         public void SendData(RCData data)
         {
-            // Convert to byte array. Structure: [Identifier, Value, Motor Direction (0 = normal; 1 = reverse)]
-            byte[] dataBytes = new byte[3];
+            // Convert to byte array. Structure: [Signature, Identifier, Data, Data2 (Direction for Motors)]
+            byte[] dataBytes = new byte[6];
             byte IdentifierByte = (byte)data.Type;
-            byte valueByte = (byte)Math.Abs(data.value);
-            byte isReverseByte = (byte)(data.value < 0 ? 1 : 0);
+            byte DataByte = (byte)System.Math.Abs(data.value);
+            byte Data2Byte = 0;
+            if (data.Type == RCDataType.Steer || data.Type == RCDataType.Speed)
+            {
+                Data2Byte = (byte)(data.value < 0 ? 1 : 0);
+            }
             
 
             // Copy identifier bytes to dataBytes
-            dataBytes[0] = IdentifierByte;
-            dataBytes[1] = valueByte;
-            dataBytes[2] = isReverseByte;
+            dataBytes[0] = SignatureByte;
+            dataBytes[1] = Signature2Byte;
+            dataBytes[2] = IdentifierByte;
+            dataBytes[3] = DataByte;
+            dataBytes[4] = Data2Byte;
+            dataBytes[5] = SignatureEndByte;
 
             // Send data to all connected devices
             foreach (BluetoothSocket socket in bluetoothSockets)

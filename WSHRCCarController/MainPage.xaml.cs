@@ -9,7 +9,8 @@ namespace WSHRCCarController
         private int MotorSpeed = 0;         // NOTE: This is from 0 to 255. 0 is no speed, 255 is full speed.
         private int MotorSteerAngle = 0; // NOTE: This is not in degrees, but in a range of -100 to 100. -100 is full left, 100 is full right.
 
-        private const float MotorSteerSensitivity = 1.2f;
+        private const float MotorSpeedSensitivity = 2.6f;
+        private const float MotorSteerSensitivity = 0.9f;
 
         public MainPage()
         {
@@ -38,27 +39,38 @@ namespace WSHRCCarController
             bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = 100 });
         }
 
-        private void JoyXPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        private void JoyPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             // multiply by MotorSpeedMultiplier to adjust the slider sensitivity
-            float actualMotorAngle = (float)(e.TotalX * MotorSteerSensitivity);
+            float actualMotorSpeed = (float)(e.TotalY * MotorSpeedSensitivity);
+            float actualMotorSteer = (float)(e.TotalX * MotorSteerSensitivity);
+            int rawTranslationY = (int)e.TotalY;
             int rawTranslationX = (int)e.TotalX;
 
-            // This moves JoystickX_Stick to the cursor position
-            if (actualMotorAngle > 255 || actualMotorAngle < -255)
+            if (actualMotorSpeed > 255 || actualMotorSpeed < -255)
             {
-                actualMotorAngle = Math.Clamp(actualMotorAngle, -255, 255);
-                rawTranslationX = (int)(actualMotorAngle / MotorSteerSensitivity);
+                actualMotorSpeed = Math.Clamp(actualMotorSpeed, -255, 255);
+                rawTranslationY = (int)(actualMotorSpeed / MotorSpeedSensitivity);
             }
 
-            JoystickX_Stick.TranslationX = rawTranslationX;
-            // Set Motor steer angle (Round value correctly)
-            MotorSteerAngle = (int)Math.Round(actualMotorAngle);
+            if (actualMotorSteer > 100 || actualMotorSteer < -100)
+            {
+                actualMotorSteer = Math.Clamp(actualMotorSteer, -100, 100);
+                rawTranslationX = (int)(actualMotorSteer / MotorSteerSensitivity);
+            }
 
-            Debug.Print($"MotorSteerAngle: {MotorSteerAngle}; RAW: {e.TotalX}");
+            Joystick_Stick.TranslationY = rawTranslationY;
+            Joystick_Stick.TranslationX = rawTranslationX;
+            // Set Motor steer angle (Round value correctly)
+            MotorSpeed = (int)Math.Round(actualMotorSpeed);
+            MotorSteerAngle = (int)Math.Round(actualMotorSteer);
+
+            Debug.Write($"MotorSpeed: {MotorSpeed}; RAW: {e.TotalY} ||||");
+            Debug.WriteLine($"MotorSteer: {MotorSteerAngle}; RAW: {e.TotalX}");
 
             // Send the data to the car
             Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
+            bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = MotorSpeed });
             bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Steer, value = MotorSteerAngle });
         }
     }

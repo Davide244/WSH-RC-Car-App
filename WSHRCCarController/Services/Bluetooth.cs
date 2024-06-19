@@ -26,6 +26,7 @@ namespace WSHRCCarController.Services
     {
         public RCDataType Type;
         public int value;
+        public int value2;
     }
 
     public interface IBluetoothService
