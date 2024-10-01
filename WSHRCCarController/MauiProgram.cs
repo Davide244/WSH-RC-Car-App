@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using Maui.FreakyEffects;
 using MauiIcons.SegoeFluent;
 using Microsoft.Extensions.Logging;
 

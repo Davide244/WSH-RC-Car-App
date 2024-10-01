@@ -18,15 +18,14 @@ namespace WSHRCCarController.Services
 
     public enum RCDataType
     {
-        Speed,
-        Steer
+        MotorStateChange
     }
 
     public struct RCData
     {
         public RCDataType Type;
-        public int value;
-        public int value2;
+        public int Speed;
+        public int Steer;
     }
 
     public interface IBluetoothService

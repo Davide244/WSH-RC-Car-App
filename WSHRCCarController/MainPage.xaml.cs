@@ -36,7 +36,7 @@ namespace WSHRCCarController
         private void Button_Clicked(object sender, EventArgs e)
         {
             Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
-            bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = 100 });
+            bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.MotorStateChange, Speed = 100, Steer = 100 });
         }
 
         private void JoyPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
@@ -55,7 +55,7 @@ namespace WSHRCCarController
 
             if (actualMotorSteer > 100 || actualMotorSteer < -100)
             {
-                actualMotorSteer = Math.Clamp(actualMotorSteer, -100, 100);
+                actualMotorSteer = Math.Clamp(actualMotorSteer, -255, 255);
                 rawTranslationX = (int)(actualMotorSteer / MotorSteerSensitivity);
             }
 
@@ -66,12 +66,12 @@ namespace WSHRCCarController
             int previousMotorSpeed = MotorSpeed;
             int previousMotorSteer = MotorSteerAngle;
 
-            if ((previousMotorSpeed != (int)Math.Round(actualMotorSpeed) && System.Math.Abs(previousMotorSpeed - (int)Math.Round(actualMotorSpeed)) > 5) || (int)Math.Round(actualMotorSpeed) == 0)
+            if ((previousMotorSpeed != (int)Math.Round(actualMotorSpeed) && System.Math.Abs(previousMotorSpeed - (int)Math.Round(actualMotorSpeed)) > 10) || (int)Math.Round(actualMotorSpeed) == 0)
             {
                 MotorSpeed = (int)Math.Round(actualMotorSpeed);
             }
 
-            if ((previousMotorSteer != (int)Math.Round(actualMotorSteer) && System.Math.Abs(previousMotorSteer - (int)Math.Round(actualMotorSteer)) > 5) || (int)Math.Round(actualMotorSteer) == 0)
+            if ((previousMotorSteer != (int)Math.Round(actualMotorSteer) && System.Math.Abs(previousMotorSteer - (int)Math.Round(actualMotorSteer)) > 10) || (int)Math.Round(actualMotorSteer) == 0)
             {
                 MotorSteerAngle = (int)Math.Round(actualMotorSteer);
             }
@@ -81,16 +81,10 @@ namespace WSHRCCarController
 
             // Send the data to the car
             Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
-            if (previousMotorSpeed != MotorSpeed || MotorSpeed == 0)
+            if ((previousMotorSpeed != MotorSpeed || MotorSpeed == 0) || (previousMotorSteer != MotorSteerAngle || MotorSteerAngle == 0))
             {
-                Debug.Write($"MotorSpeed: {MotorSpeed}; RAW: {e.TotalY} ||||");
-                bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Speed, value = MotorSpeed });
-            }
-
-            if (previousMotorSteer != MotorSteerAngle || MotorSteerAngle == 0)
-            {
-                bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.Steer, value = MotorSteerAngle });
-                Debug.WriteLine($"MotorSteer: {MotorSteerAngle}; RAW: {e.TotalX}");
+                //Debug.Write($"MotorSpeed: {MotorSpeed}; RAW: {e.TotalY} ||||");
+                bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.MotorStateChange, Speed = MotorSpeed, Steer = MotorSteerAngle });
             }
         }
     }
