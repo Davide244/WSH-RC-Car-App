@@ -18,6 +18,7 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
     {
         private BluetoothAdapter _bluetoothAdapter;
         private BluetoothDevice _bluetoothDevice;
+        private BluetoothSocket _bluetoothSocket;
         private List<BluetoothSocket> bluetoothSockets = new();
 
         public BluetoothConnector()
@@ -28,7 +29,6 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
         public List<RCBluetoothDevice> GetAvailableDevices()
         {
             List<RCBluetoothDevice> connectedDevices = new List<RCBluetoothDevice>();
-
             foreach (BluetoothDevice device in _bluetoothAdapter.BondedDevices)
             {
                 connectedDevices.Add(new RCBluetoothDevice
@@ -43,7 +43,7 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
             return connectedDevices;
         }
 
-        public void ConnectToDevice(RCBluetoothDevice device)
+        public bool ConnectToDevice(RCBluetoothDevice device)
         {
             _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(device.Address);
 
@@ -51,7 +51,7 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
 
             //BluetoothSocket _bluetoothSocket = _bluetoothDevice.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
             // Print UUIDs to debug
-            BluetoothSocket _bluetoothSocket = _bluetoothDevice.CreateInsecureRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
+            _bluetoothSocket = _bluetoothDevice.CreateInsecureRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
             //try
             //{
             //    _bluetoothSocket.Connect();
@@ -62,9 +62,17 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
             //    return;
             //}
 
-            _bluetoothSocket.Connect();
+            try
+            {
+                _bluetoothSocket.Connect();
+                bluetoothSockets.Add(_bluetoothSocket);
+            }
+            catch
+            {
+                return false;
+            }
 
-            bluetoothSockets.Add(_bluetoothSocket);
+            return true;
         }
 
         public void DisconnectDevice(RCBluetoothDevice device)
@@ -84,7 +92,7 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
         const byte Signature2Byte = 0x01;
         const byte SignatureEndByte = 0x1C;
 
-        public void SendData(RCData data)
+        public bool SendData(RCData data)
         {
             // Convert to byte array. Structure: [Signature, Identifier, Data, Data2 (Direction for Motors)]
             byte[] dataBytes = new byte[8];
@@ -107,10 +115,23 @@ namespace WSHRCCarController.Platforms.Android.Bluetooth
             // Print to debug
             Console.WriteLine("Sending data: " + BitConverter.ToString(dataBytes));
 
-            // Send data to all connected devices
-            foreach (BluetoothSocket socket in bluetoothSockets)
+            try
             {
-                socket.OutputStream.Write(dataBytes, 0, dataBytes.Length); 
+                if (_bluetoothSocket.IsConnected)
+                {
+                    // Send data to all connected devices
+                    foreach (BluetoothSocket socket in bluetoothSockets)
+                    {
+                        socket.OutputStream.Write(dataBytes, 0, dataBytes.Length);
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

@@ -34,7 +34,7 @@ public partial class BluetoothDeviceItemViewmodel : ObservableObject
 
 public partial class BluetoothPage : ContentPage
 {
-	BluetoothDeviceItemViewmodel bluetoothDeviceItemViewmodel = new();
+	static BluetoothDeviceItemViewmodel bluetoothDeviceItemViewmodel = new();
 	public BluetoothPage()
 	{
 
@@ -79,18 +79,24 @@ public partial class BluetoothPage : ContentPage
 		}
     }
 
-    private void ConnectToDeviceBtn_Clicked(object sender, EventArgs e)
+    private async void ConnectToDeviceBtn_Clicked(object sender, EventArgs e)
     {
 		// get data context of sender
 		BluetoothDeviceListItem device = (BluetoothDeviceListItem)((Button)sender).BindingContext;
 
 		Services.IBluetoothService bluetoothService = DependencyService.Get<Services.IBluetoothService>();
-		bluetoothService.ConnectToDevice(new Services.RCBluetoothDevice { Name = device.DeviceName, Address = device.DeviceAddress, Status = device.DeviceStatus, Manufacturer = device.DeviceManufacturer });
-
-		// add device to connected devices
-		bluetoothDeviceItemViewmodel.ConnectedBluetoothDeviceList.Add(device);
-		// Remove device from available devices
-		bluetoothDeviceItemViewmodel.AvailableBluetoothDeviceList.Remove(device);
+		bool success = bluetoothService.ConnectToDevice(new Services.RCBluetoothDevice { Name = device.DeviceName, Address = device.DeviceAddress, Status = device.DeviceStatus, Manufacturer = device.DeviceManufacturer });
+		if (success)
+        {
+            // add device to connected devices
+            bluetoothDeviceItemViewmodel.ConnectedBluetoothDeviceList.Add(device);
+            // Remove device from available devices
+            bluetoothDeviceItemViewmodel.AvailableBluetoothDeviceList.Remove(device);
+        }
+        else
+        {
+            await DisplayAlert("Error", "Failed to connect to device", "OK");
+        }
     }
 
     private void DisconnectFromDeviceBtn_Clicked(object sender, EventArgs e)

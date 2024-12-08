@@ -32,11 +32,11 @@ namespace WSHRCCarController.Services
     {
         List<RCBluetoothDevice> GetAvailableDevices();
 
-        void ConnectToDevice(RCBluetoothDevice device);
+        bool ConnectToDevice(RCBluetoothDevice device);
         void DisconnectDevice(RCBluetoothDevice device);
 
         bool isDeviceConnected(RCBluetoothDevice device);
 
-        void SendData(RCData data);
+        bool SendData(RCData data);
     }
 }

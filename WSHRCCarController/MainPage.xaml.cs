@@ -1,5 +1,9 @@
 ﻿using MauiIcons.Core;
 using System.Diagnostics;
+using CommunityToolkit.Maui.Alerts;
+using Microsoft.Maui;
+using static System.Net.Mime.MediaTypeNames;
+using CommunityToolkit.Maui.Core;
 
 namespace WSHRCCarController
 {
@@ -39,7 +43,7 @@ namespace WSHRCCarController
             bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.MotorStateChange, Speed = 100, Steer = 100 });
         }
 
-        private void JoyPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        private async void JoyPanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             // multiply by MotorSpeedMultiplier to adjust the slider sensitivity
             float actualMotorSpeed = (float)(e.TotalY * MotorSpeedSensitivity);
@@ -68,11 +72,13 @@ namespace WSHRCCarController
 
             if ((previousMotorSpeed != (int)Math.Round(actualMotorSpeed) && System.Math.Abs(previousMotorSpeed - (int)Math.Round(actualMotorSpeed)) > 10) || (int)Math.Round(actualMotorSpeed) == 0)
             {
-                MotorSpeed = (int)Math.Round(actualMotorSpeed);
+                MotorSpeed = (int)Math.Round(actualMotorSpeed / 2);
             }
 
             if ((previousMotorSteer != (int)Math.Round(actualMotorSteer) && System.Math.Abs(previousMotorSteer - (int)Math.Round(actualMotorSteer)) > 10) || (int)Math.Round(actualMotorSteer) == 0)
             {
+                //MotorSteerAngle = (int)Math.Round(actualMotorSteer);
+                // IF steer angle is bigger than 60, steer 255 to direction
                 MotorSteerAngle = (int)Math.Round(actualMotorSteer);
             }
 
@@ -84,7 +90,10 @@ namespace WSHRCCarController
             if ((previousMotorSpeed != MotorSpeed || MotorSpeed == 0) || (previousMotorSteer != MotorSteerAngle || MotorSteerAngle == 0))
             {
                 //Debug.Write($"MotorSpeed: {MotorSpeed}; RAW: {e.TotalY} ||||");
-                bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.MotorStateChange, Speed = MotorSpeed, Steer = MotorSteerAngle });
+                if (bluetoothService.SendData(new Services.RCData { Type = Services.RCDataType.MotorStateChange, Speed = MotorSpeed, Steer = MotorSteerAngle }) == false) 
+                {
+                    Toast.Make("Failed to send data.", ToastDuration.Short, 14);
+                }
             }
         }
     }
